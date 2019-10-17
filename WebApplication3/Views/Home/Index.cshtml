@@ -1,0 +1,17 @@
+﻿@model string
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <pre>
+        @ViewData["hookinfo"]
+    </pre>
+</div>
+
+<div class="text-center">
+    <form asp-action="SendPhoto" method="post">
+        <input type="submit" value="SendPhoto"/>
+    </form>
+</div>
