@@ -8,6 +8,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Telegram.Bot.Types;
@@ -18,12 +19,14 @@ namespace WebApplication3.Controllers
     public class HomeController : Controller
     {
         private readonly IConfiguration configuration;
+        private readonly ILogger logger;
         private static readonly HttpClient httpClient = new HttpClient();
         private static readonly HttpClient imageHttpClient = new HttpClient();
 
-        public HomeController(IConfiguration configuration)
+        public HomeController(IConfiguration configuration, ILogger logger)
         {
             this.configuration = configuration;
+            this.logger = logger;
         }
 
         public async Task<IActionResult> Index()
@@ -57,6 +60,8 @@ namespace WebApplication3.Controllers
         {
             var token = configuration.GetValue<string>("TelegramToken");
             var client = new Telegram.Bot.TelegramBotClient(token, httpClient);
+
+            logger.Log(LogLevel.Information, "Got update:" + JsonConvert.SerializeObject(update));
 
             await client.SendTextMessageAsync(
                 chatId: update.Message.Chat,
