@@ -8,7 +8,9 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Telegram.Bot.Types;
 using WebApplication3.Models;
 
 namespace WebApplication3.Controllers
@@ -16,7 +18,6 @@ namespace WebApplication3.Controllers
     public class HomeController : Controller
     {
         private readonly IConfiguration configuration;
-        private static readonly string CommandUrl = "https://api.telegram.org/bot{0}/{1}";
         private static readonly HttpClient httpClient = new HttpClient();
         private static readonly HttpClient imageHttpClient = new HttpClient();
 
@@ -29,11 +30,40 @@ namespace WebApplication3.Controllers
         {
             var token = configuration.GetValue<string>("TelegramToken");
 
-            var url = string.Format(CommandUrl, token, "getWebhookInfo");
-            var content = await httpClient.GetStringAsync(url);
+            var client = new Telegram.Bot.TelegramBotClient(token, httpClient);
+            var hookInfo = await client.GetWebhookInfoAsync();
 
-            ViewData["hookinfo"] = content;
+            ViewData["hookinfo"] = JsonConvert.SerializeObject(hookInfo);
             return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SetHook()
+        {
+            var urlBase = $"{this.Request.Scheme}://{this.Request.Host}";
+            var urlHook = Url.Action("Hook");
+            var fullUrl = new Uri(new Uri(urlBase), urlHook);
+
+            var token = configuration.GetValue<string>("TelegramToken");
+
+            var client = new Telegram.Bot.TelegramBotClient(token, httpClient);
+            await client.SetWebhookAsync(fullUrl.ToString());
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Hook(Update update)
+        {
+            var token = configuration.GetValue<string>("TelegramToken");
+            var client = new Telegram.Bot.TelegramBotClient(token, httpClient);
+
+            await client.SendTextMessageAsync(
+                chatId: update.Message.Chat,
+                text: "You said:\n" + update.Message.Text
+            );
+
+            return Ok();
         }
 
         [HttpPost]
