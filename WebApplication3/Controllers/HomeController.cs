@@ -19,12 +19,12 @@ namespace WebApplication3.Controllers
     public class HomeController : Controller
     {
         private readonly IConfiguration configuration;
-        private readonly ILogger logger;
+        private readonly ILogger<HomeController> logger;
         private static readonly HttpClient httpClient = new HttpClient();
         private static readonly HttpClient imageHttpClient = new HttpClient();
         private static string lastupdate;
 
-        public HomeController(IConfiguration configuration, ILogger logger)
+        public HomeController(IConfiguration configuration, ILogger<HomeController> logger)
         {
             this.configuration = configuration;
             this.logger = logger;
