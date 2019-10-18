@@ -53,7 +53,11 @@ namespace WebApplication3.Controllers
             var token = configuration.GetValue<string>("TelegramToken");
 
             var client = new Telegram.Bot.TelegramBotClient(token, httpClient);
-            await client.SetWebhookAsync(fullUrl.ToString());
+            await client.SetWebhookAsync(fullUrl.ToString(), allowedUpdates: new List<UpdateType>
+            {
+                UpdateType.Message,
+                UpdateType.ChannelPost
+            });
 
             return RedirectToAction("Index");
         }
