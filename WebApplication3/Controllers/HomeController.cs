@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 using WebApplication3.Models;
 
 namespace WebApplication3.Controllers
@@ -62,6 +63,11 @@ namespace WebApplication3.Controllers
         {
             lastupdate = JsonConvert.SerializeObject(update);
             logger.Log(LogLevel.Information, "Got update:" + JsonConvert.SerializeObject(update));
+
+            if (update.Type != UpdateType.Message)
+            {
+                return Ok();
+            }
 
             var token = configuration.GetValue<string>("TelegramToken");
             var client = new Telegram.Bot.TelegramBotClient(token, httpClient);
