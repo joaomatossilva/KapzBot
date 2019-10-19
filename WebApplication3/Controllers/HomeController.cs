@@ -44,6 +44,17 @@ namespace WebApplication3.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> GetUpdates()
+        {
+            var token = configuration.GetValue<string>("TelegramToken");
+            var client = new Telegram.Bot.TelegramBotClient(token, httpClient);
+
+            var updates = await client.GetUpdatesAsync();
+            lastupdate = JsonConvert.SerializeObject(updates);
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
         public async Task<IActionResult> SetHook()
         {
             var urlBase = $"{this.Request.Scheme}://{this.Request.Host}";
@@ -58,6 +69,17 @@ namespace WebApplication3.Controllers
                 UpdateType.Message,
                 UpdateType.ChannelPost
             });
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteHook()
+        {
+            var token = configuration.GetValue<string>("TelegramToken");
+
+            var client = new Telegram.Bot.TelegramBotClient(token, httpClient);
+            await client.DeleteWebhookAsync();
 
             return RedirectToAction("Index");
         }
