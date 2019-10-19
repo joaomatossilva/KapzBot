@@ -23,7 +23,7 @@ namespace WebApplication3.Controllers
         private readonly ILogger<HomeController> logger;
         private static readonly HttpClient httpClient = new HttpClient();
         private static readonly HttpClient imageHttpClient = new HttpClient();
-        private static string lastupdate;
+        private static List<string> lastupdate;
 
         public HomeController(IConfiguration configuration, ILogger<HomeController> logger)
         {
@@ -50,7 +50,7 @@ namespace WebApplication3.Controllers
             var client = new Telegram.Bot.TelegramBotClient(token, httpClient);
 
             var updates = await client.GetUpdatesAsync();
-            lastupdate = JsonConvert.SerializeObject(updates);
+            lastupdate.Add(JsonConvert.SerializeObject(updates));
             return RedirectToAction("Index");
         }
 
@@ -87,7 +87,7 @@ namespace WebApplication3.Controllers
         [HttpPost]
         public async Task<IActionResult> Hook(Update update)
         {
-            lastupdate = JsonConvert.SerializeObject(update);
+            lastupdate.Add(JsonConvert.SerializeObject(update));
             logger.Log(LogLevel.Information, "Got update:" + JsonConvert.SerializeObject(update));
 
             if (update.Type != UpdateType.Message)
