@@ -23,7 +23,7 @@ namespace WebApplication3.Controllers
         private readonly ILogger<HomeController> logger;
         private static readonly HttpClient httpClient = new HttpClient();
         private static readonly HttpClient imageHttpClient = new HttpClient();
-        private static List<string> lastupdate;
+        private static List<string> lastupdate = new List<string>(); 
 
         public HomeController(IConfiguration configuration, ILogger<HomeController> logger)
         {
