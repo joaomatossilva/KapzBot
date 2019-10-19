@@ -39,7 +39,7 @@ namespace WebApplication3.Controllers
             var hookInfo = await client.GetWebhookInfoAsync();
 
             ViewData["hookinfo"] = JsonConvert.SerializeObject(hookInfo);
-            ViewData["lastUpdate"] = lastupdate;
+            ViewData["lastUpdate"] = JsonConvert.SerializeObject(lastupdate);
             return View();
         }
 
